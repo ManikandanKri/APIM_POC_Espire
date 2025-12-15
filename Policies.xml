@@ -1,0 +1,22 @@
+<inbound>
+    <base />
+    <validate-content
+        unspecified-content-type-action="reject"
+        max-size="102400"
+        errors-variable-name="validationErrors">
+        <content type="application/json" />
+    </validate-content>
+
+    <rate-limit-by-key calls="10" renewal-period="60"
+        counter-key="@(context.Subscription.Key)" />
+
+    <set-header name="correlation-id" exists-action="override">
+        <value>@(Guid.NewGuid().ToString())</value>
+    </set-header>
+</inbound>
+<outbound>
+    <base />
+    <set-header name="Authorization" exists-action="override">
+        <value>@("Bearer " + context.Variables["accessToken"])</value>
+    </set-header>
+</outbound>
